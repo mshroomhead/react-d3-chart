@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import styled from 'styled-components/macro';
 
 import { GlobalStyles } from '../styles/globalStyles';
+import { Demo } from './Demo';
 
 export class App extends Component {
   render() {
     return (
-      <StyledApp>
-        App
+      <>
+        <Demo />
         <GlobalStyles />
-      </StyledApp>
+      </>
     );
   }
 }
-
-const StyledApp = styled.div``;
