@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 export interface ResponsiveContainerProps {
   children: any;

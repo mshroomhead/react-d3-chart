@@ -59,10 +59,6 @@ export class Overlay<Datum> extends PureComponent<OverlayProps<Datum>> {
     this.update(nextProps);
   }
 
-  shouldComponentUpdate() {
-    return false;
-  }
-
   update(props: OverlayProps<Datum>) {
     const { size, minDomainDelta, xScale } = props;
 

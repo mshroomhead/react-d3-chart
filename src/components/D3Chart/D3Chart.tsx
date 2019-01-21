@@ -1,16 +1,8 @@
 import { scaleLinear, scaleTime } from 'd3-scale';
+import { isEqual } from 'lodash';
 import * as React from 'react';
 import { PureComponent, ReactNode } from 'react';
-import { isEqual } from 'lodash';
-import {
-  DomainLinear,
-  DomainTime,
-  Spacing,
-  DatumAndPoint,
-  Size,
-  ScaleTime,
-  ScaleLinear,
-} from './d3Chart.models';
+import { DatumAndPoint, DomainLinear, DomainTime, ScaleLinear, ScaleTime, Size, Spacing } from './d3Chart.models';
 import { Overlay } from './D3ChartOverlay';
 import { ResponsiveContainer } from './ResponsiveContainer';
 
@@ -37,9 +29,9 @@ export interface D3ChartProps<Datum> {
   margin: Spacing;
 
   /**
-   * Min and max values for the x-values, has to be present if the chart is interactive
+   * Min and max values for the x-values
    */
-  maxXDomain?: DomainTime;
+  maxXDomain: DomainTime;
 
   /**
    * Minimal zoom level
@@ -250,7 +242,7 @@ export class D3Chart<Datum> extends PureComponent<
 
     return (
       <ResponsiveContainer onSizeChange={this.handleSizeChange}>
-        <svg data-test-id="Chart" width={size.width} height={size.height}>
+        <svg width={size.width} height={size.height}>
           <g transform={`translate(${left}, ${top})`}>
             {isInteractive && (
               <Overlay
@@ -259,7 +251,7 @@ export class D3Chart<Datum> extends PureComponent<
                 xScale={xScale}
                 yScale={yScale}
                 size={contentSize}
-                maxDomain={maxXDomain!}
+                maxDomain={maxXDomain}
                 minDomainDelta={minDomainDelta || 0}
                 onHoverDatum={this.handleHover}
                 onHoverEnter={onHoverEnter}
