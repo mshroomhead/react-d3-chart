@@ -14,3 +14,7 @@ export function isScaleEqual<T extends ScaleTime | ScaleLinear>(
     isEqual(scale1.domain(), scale2.domain())
   );
 }
+
+export function getClipPathUrl(id?: string) {
+  return id ? `url(#${id})` : '';
+}
