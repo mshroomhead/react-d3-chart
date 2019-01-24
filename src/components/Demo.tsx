@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Component, Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import styled from 'styled-components/macro';
-import { createResource } from './dataFetcher';
 import { DemoChart } from './DemoChart';
 
 interface DemoState {
@@ -36,33 +35,24 @@ export interface Datum {
 export const xAccessor = (datum: Datum) => new Date(datum.date);
 export const yAccessor = (datum: Datum) => datum.close;
 
-export class Demo extends Component<{}, DemoState> {
-  state = {
-    data: null,
-    color: '#0088cc',
-  };
+export function Demo() {
+  const [color, setColor] = useState('#0088cc');
 
-  toggleColor = () =>
-    this.setState(({ color }) => ({
-      color: color === '#ef5b5b' ? '#0088cc' : '#ef5b5b',
-    }));
-
-  render() {
-    const { color } = this.state;
-
-    return (
-      <StyledDemo>
-        <Title>Composable D3 chart</Title>
-        <Chart>
-          <Suspense fallback={'Loading...'}>
-            <DemoChart splineColor={color} />
-          </Suspense>
-        </Chart>
-        <button onClick={this.toggleColor}>Toggle color</button>
-      </StyledDemo>
-    );
-  }
+  return (
+    <StyledDemo>
+      <Title>Composable D3 chart</Title>
+      <Chart>
+        <Suspense fallback={'Loading...'}>
+          <DemoChart splineColor={color} />
+        </Suspense>
+      </Chart>
+      <button onClick={() => setColor(toggleColor)}>Toggle color</button>
+    </StyledDemo>
+  );
 }
+
+const toggleColor = (prevColor: string) =>
+  prevColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b';
 
 // ----==== Styles ====---- //
 const StyledDemo = styled.div`

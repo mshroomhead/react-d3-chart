@@ -7,7 +7,7 @@ import { DomainLinear, DomainTime, Spacing } from './D3Chart/d3Chart.models';
 import { Spline } from './D3Chart/Spline';
 import { XAxis } from './D3Chart/XAxis';
 import { createResource } from './dataFetcher';
-import { xAccessor, yAccessor } from './Demo';
+import { Datum, xAccessor, yAccessor } from './Demo';
 
 interface DemoChartProps {
   splineColor: string;
@@ -18,8 +18,9 @@ const margin: Spacing = { top: 5, right: 5, bottom: 20, left: 25 };
 export function DemoChart(props: DemoChartProps) {
   const { splineColor } = props;
 
-  const data = createResource(() =>
-    fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
+  const data = createResource<Datum[]>(
+    fetch('https://api.iextrading.com/1.0/stock/aapl/chart'),
+    'data'
   );
 
   const initialXDomain = extent(data, xAccessor) as DomainTime;
