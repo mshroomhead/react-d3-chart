@@ -1,7 +1,19 @@
-import { unstable_createResource as createResource } from 'react-cache';
+interface CacheEntry {
+  response?: any;
+  fetch?: Promise<any>;
+}
 
-export const dataResource = createResource(() =>
-  fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
+const singleCacheEntry: CacheEntry = {
+  response: undefined,
+  fetch: undefined,
+};
+
+export function createResource(fetch: () => Promise<any>) {
+  if (singleCacheEntry.response) {
+    return singleCacheEntry.response;
+  }
+
+  throw (singleCacheEntry.fetch = fetch()
     .then(response => response.json())
-    .then(console.log)
-);
+    .then(response => (singleCacheEntry.response = response)));
+}

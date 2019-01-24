@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Component } from 'react';
+import { Component, Suspense } from 'react';
 import styled from 'styled-components/macro';
+import { createResource } from './dataFetcher';
 import { DemoChart } from './DemoChart';
 
 interface DemoState {
@@ -41,26 +42,22 @@ export class Demo extends Component<{}, DemoState> {
     color: '#0088cc',
   };
 
-  async componentDidMount() {
-    const response = await fetch(
-      'https://api.iextrading.com/1.0/stock/aapl/chart'
-    );
-    const data = await response.json();
-    this.setState({ data });
-  }
-
   toggleColor = () =>
     this.setState(({ color }) => ({
       color: color === '#ef5b5b' ? '#0088cc' : '#ef5b5b',
     }));
 
   render() {
-    const { data, color } = this.state;
+    const { color } = this.state;
 
     return (
       <StyledDemo>
         <Title>Composable D3 chart</Title>
-        <Chart>{data && <DemoChart data={data} splineColor={color} />}</Chart>
+        <Chart>
+          <Suspense fallback={'Loading...'}>
+            <DemoChart splineColor={color} />
+          </Suspense>
+        </Chart>
         <button onClick={this.toggleColor}>Toggle color</button>
       </StyledDemo>
     );
