@@ -3,7 +3,7 @@ import { select } from 'd3-selection';
 import { curveMonotoneX, line } from 'd3-shape';
 import { isDate } from 'lodash';
 import * as React from 'react';
-import { Component } from 'react';
+import { PureComponent } from 'react';
 
 import styled, { FlattenSimpleInterpolation } from 'styled-components';
 import { ScaleLinear, ScaleTime } from './d3Chart.models';
@@ -34,7 +34,7 @@ export interface SplineProps<Datum> {
  *
  * Chart content for spline chart
  */
-export class Spline<Datum> extends Component<SplineProps<Datum>> {
+export class Spline<Datum> extends PureComponent<SplineProps<Datum>> {
   private element = React.createRef<SVGPathElement>();
 
   componentDidMount() {

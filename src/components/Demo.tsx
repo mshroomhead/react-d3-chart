@@ -1,46 +1,70 @@
-import { extent } from 'd3-array';
 import * as React from 'react';
-import { useState } from 'react';
+import { Component } from 'react';
 import styled from 'styled-components/macro';
+import { DemoChart } from './DemoChart';
 
-import { DomainLinear, DomainTime } from './D3Chart/d3Chart.models';
-import { Datum, DemoChart } from './DemoChart';
+interface DemoState {
+  data: Datum[] | null;
+  color: string;
+}
 
-const data: Datum[] = [
-  { x: new Date('2019-01-01'), y: 2 },
-  { x: new Date('2019-01-02'), y: 3 },
-  { x: new Date('2019-01-03'), y: 1 },
-  { x: new Date('2019-01-04'), y: 4 },
-  { x: new Date('2019-01-05'), y: 5 },
-];
+export interface Datum {
+  date: string;
+  minute: string;
+  label: string;
+  high: number;
+  low: number;
+  average: number;
+  volume: number;
+  notional: number;
+  numberOfTrades: number;
+  marktHigh: number;
+  marketLow: number;
+  marketAverage: number;
+  marketVolume: number;
+  marketNotional: number;
+  marketNumberOfTrades: number;
+  open: number;
+  close: number;
+  marktOpen: number;
+  marketClose: number;
+  changeOverTime: number;
+  marketChangeOverTime: number;
+}
 
-const maxXDomain: DomainTime = extent(data, d => d.x) as DomainTime;
-const yDomain: DomainLinear = [0, 5];
+export const xAccessor = (datum: Datum) => new Date(datum.date);
+export const yAccessor = (datum: Datum) => datum.close;
 
-export function Demo() {
-  const [splineColor, setSplineColor] = useState('#0088cc');
+export class Demo extends Component<{}, DemoState> {
+  state = {
+    data: null,
+    color: '#0088cc',
+  };
 
-  return (
-    <StyledDemo>
-      <Title>Composable D3 chart</Title>
-      <Chart>
-        <DemoChart
-          data={data}
-          initialXDomain={maxXDomain}
-          initialYDomain={yDomain}
-          maxXDomain={maxXDomain}
-          splineColor={splineColor}
-        />
-      </Chart>
-      <button
-        onClick={() =>
-          setSplineColor(splineColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b')
-        }
-      >
-        Toggle color
-      </button>
-    </StyledDemo>
-  );
+  async componentDidMount() {
+    const response = await fetch(
+      'https://api.iextrading.com/1.0/stock/aapl/chart'
+    );
+    const data = await response.json();
+    this.setState({ data });
+  }
+
+  toggleColor = () =>
+    this.setState(({ color }) => ({
+      color: color === '#ef5b5b' ? '#0088cc' : '#ef5b5b',
+    }));
+
+  render() {
+    const { data, color } = this.state;
+
+    return (
+      <StyledDemo>
+        <Title>Composable D3 chart</Title>
+        <Chart>{data && <DemoChart data={data} splineColor={color} />}</Chart>
+        <button onClick={this.toggleColor}>Toggle color</button>
+      </StyledDemo>
+    );
+  }
 }
 
 // ----==== Styles ====---- //
