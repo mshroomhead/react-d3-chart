@@ -47,7 +47,10 @@ export function Demo() {
           <DemoChart splineColor={color} />
         </Suspense>
       </Chart>
-      <button onClick={() => setColor(toggleColor)}>Toggle color</button>
+      <div>
+        <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
+        <Button onClick={() => window.location.reload()}>Reload</Button>
+      </div>
     </StyledDemo>
   );
 }
@@ -68,9 +71,24 @@ const Title = styled.h3`
 `;
 
 const Chart = styled.div`
+  padding: 8px;
   position: relative;
   height: 300px;
   margin: 32px;
   align-self: stretch;
   background-color: white;
+`;
+
+const Button = styled.button`
+  margin: 0 8px;
+  padding: 8px 16px;
+  color: #a9b7c6;
+  font-weight: bold;
+  font-size: 16px;
+  background-color: #3c3f41;
+  border: none;
+  border-radius: 999px;
+  &:focus {
+    outline: none;
+  }
 `;

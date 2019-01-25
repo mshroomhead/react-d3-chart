@@ -1,4 +1,4 @@
-import { bisector } from 'd3-array';
+import { bisector, extent } from 'd3-array';
 import { scaleTime } from 'd3-scale';
 import { ContainerElement, event, mouse, select } from 'd3-selection';
 import { zoom, zoomIdentity } from 'd3-zoom';
@@ -14,7 +14,7 @@ export interface OverlayProps<Datum> {
   xScale: ScaleTime;
   yScale: ScaleLinear;
   size: Size;
-  maxDomain: DomainTime;
+  maxDomain?: DomainTime;
   minDomainDelta?: number;
   isHoverEnabled?: boolean;
   xAccessor(datum: Datum): Date;
@@ -50,38 +50,34 @@ export class Overlay<Datum> extends PureComponent<OverlayProps<Datum>> {
   private isZooming: boolean = false;
 
   componentDidMount() {
-    this.createMaxDomainScale(this.props);
+    this.createMaxDomainScale();
     this.initOverlay();
-    this.updateZoomFactor(this.props);
+    this.updateZoomFactor();
   }
 
-  componentWillReceiveProps(nextProps: OverlayProps<Datum>) {
-    this.update(nextProps);
-  }
+  componentDidUpdate(prevProps: OverlayProps<Datum>) {
+    const { size, minDomainDelta, xScale } = this.props;
 
-  update(props: OverlayProps<Datum>) {
-    const { size, minDomainDelta, xScale } = props;
-
-    if (size !== this.props.size) {
-      this.createMaxDomainScale(props);
-      this.updateMinMaxZoomFactor(props);
+    if (prevProps.size !== size) {
+      this.createMaxDomainScale();
+      this.updateMinMaxZoomFactor();
     }
 
     // Explicit false because this prevents the initial zoom update
-    if (!isScaleEqual(xScale, this.props.xScale) && this.isZooming === false) {
-      this.updateZoomFactor(props);
+    if (!isScaleEqual(prevProps.xScale, xScale) && this.isZooming === false) {
+      this.updateZoomFactor();
     }
 
-    if (minDomainDelta !== this.props.minDomainDelta) {
-      this.updateMaxZoomFactor(props);
+    if (prevProps.minDomainDelta !== minDomainDelta) {
+      this.updateMaxZoomFactor();
     }
   }
 
-  createMaxDomainScale(props: OverlayProps<Datum>) {
-    const { maxDomain, size } = props;
+  createMaxDomainScale() {
+    const { maxDomain, size, data, xAccessor } = this.props;
 
     this.maxDomainScale = scaleTime()
-      .domain(maxDomain)
+      .domain(maxDomain || (extent(data, xAccessor) as DomainTime))
       .range([0, size.width]);
   }
 
@@ -97,11 +93,11 @@ export class Overlay<Datum> extends PureComponent<OverlayProps<Datum>> {
       .on('zoom', this.handleZoom)
       .on('end', this.handleZoomEnd);
 
-    this.updateMinMaxZoomFactor(this.props);
+    this.updateMinMaxZoomFactor();
   }
 
-  updateMinMaxZoomFactor(props: OverlayProps<Datum>) {
-    const { width, height } = props.size;
+  updateMinMaxZoomFactor() {
+    const { width, height } = this.props.size;
 
     select(this.overlay.current)
       .attr('width', width)
@@ -116,26 +112,28 @@ export class Overlay<Datum> extends PureComponent<OverlayProps<Datum>> {
     this.zoom.extent(extent);
     this.zoom.translateExtent(extent);
 
-    this.updateMaxZoomFactor(props);
+    this.updateMaxZoomFactor();
 
     select(this.overlay.current as Element).call(this.zoom);
   }
 
-  updateMaxZoomFactor(props: OverlayProps<Datum>) {
-    const { minDomainDelta, maxDomain } = props;
+  updateMaxZoomFactor() {
+    const { minDomainDelta } = this.props;
 
     let maxScale = MAX_ZOOM_FACTOR;
 
     if (minDomainDelta) {
-      const maxDomainDelta = getTimeDelta(maxDomain);
+      const maxDomainDelta = getTimeDelta(
+        this.maxDomainScale.domain() as DomainTime
+      );
       maxScale = maxDomainDelta / minDomainDelta;
     }
 
     this.zoom.scaleExtent([MIN_ZOOM_FACTOR, maxScale]);
   }
 
-  updateZoomFactor(props: OverlayProps<Datum>) {
-    const { size, xScale } = props;
+  updateZoomFactor() {
+    const { size, xScale } = this.props;
 
     // calculate how the domain would be mapped to pixel values without any zoom
     const unzoomedPixelValues = xScale
@@ -279,16 +277,12 @@ export class Overlay<Datum> extends PureComponent<OverlayProps<Datum>> {
   };
 
   render() {
-    return (
-      <StyledOverlay>
-        <rect ref={this.overlay} />
-      </StyledOverlay>
-    );
+    return <StyledOverlay ref={this.overlay} />;
   }
 }
 
 // -- Styles -- //
-const StyledOverlay = styled.g`
+const StyledOverlay = styled.rect`
   fill: none;
   pointer-events: all;
 `;

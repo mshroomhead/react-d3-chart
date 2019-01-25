@@ -14,7 +14,7 @@ interface DemoChartProps {
   splineColor: string;
 }
 
-const margin: Spacing = { top: 5, right: 5, bottom: 20, left: 25 };
+const margin: Spacing = { top: 5, right: 5, bottom: 20, left: 26 };
 
 export function DemoChart(props: DemoChartProps) {
   const { splineColor } = props;
@@ -33,7 +33,6 @@ export function DemoChart(props: DemoChartProps) {
         <D3Chart
           margin={margin}
           xDomain={xDomain}
-          maxXDomain={initialXDomain}
           yDomain={yDomain}
           xAccessor={xAccessor}
           data={data}

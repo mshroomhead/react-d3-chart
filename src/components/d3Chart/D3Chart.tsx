@@ -39,7 +39,7 @@ export interface D3ChartProps<Datum> {
   /**
    * Min and max values for the x-values
    */
-  maxXDomain: DomainTime;
+  maxXDomain?: DomainTime;
 
   /**
    * Minimal zoom level
