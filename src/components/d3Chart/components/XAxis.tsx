@@ -1,5 +1,6 @@
 import { axisBottom } from 'd3-axis';
 import { select } from 'd3-selection';
+import { Transition } from 'd3-transition';
 import * as React from 'react';
 import { Component } from 'react';
 
@@ -8,6 +9,7 @@ import { ScaleTime, Size } from '../models';
 export interface XAxisProps {
   xScale: ScaleTime;
   size: Size;
+  animate: boolean;
   formatTick?(date: Date): string;
 }
 
@@ -43,6 +45,7 @@ export class XAxis extends Component<XAxisProps> {
     const {
       xScale,
       size: { height },
+      animate,
       formatTick,
     } = props;
 
@@ -52,9 +55,16 @@ export class XAxis extends Component<XAxisProps> {
       xAxis.tickFormat(formatTick);
     }
 
-    select(this.element.current as SVGSVGElement)
-      .attr('transform', `translate(0, ${height})`)
-      .call(xAxis);
+    let selection: any = select(this.element.current as SVGSVGElement).attr(
+      'transform',
+      `translate(0, ${height})`
+    );
+
+    if (animate) {
+      selection = selection.transition().duration(200);
+    }
+
+    selection.call(xAxis);
   }
 
   render() {

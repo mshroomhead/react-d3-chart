@@ -1,13 +1,13 @@
+import { extent } from 'd3-array';
 import * as React from 'react';
 import { Suspense, useState } from 'react';
 import styled from 'styled-components/macro';
+import { ChartState } from '../d3Chart/components/ChartState';
+import { DomainLinear, DomainTime } from '../d3Chart/models';
+import { zoomIn, zoomOut } from '../d3Chart/utils';
 import { DemoChart } from './DemoChart';
+import { createResource } from './simpleCache';
 import { Spinner } from './Spinner';
-
-interface DemoState {
-  data: Datum[] | null;
-  color: string;
-}
 
 export interface Datum {
   date: string;
@@ -36,27 +36,62 @@ export interface Datum {
 export const xAccessor = (datum: Datum) => new Date(datum.date);
 export const yAccessor = (datum: Datum) => datum.close;
 
+interface DomainState {
+  xDomain: DomainTime | null;
+  animate: boolean;
+}
+
 export function Demo() {
   const [color, setColor] = useState('#0088cc');
 
   return (
-    <StyledDemo>
-      <Title>Composable D3 chart</Title>
-      <Chart>
-        <Suspense fallback={<Spinner />}>
-          <DemoChart splineColor={color} />
-        </Suspense>
-      </Chart>
-      <div>
-        <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
-        <Button onClick={() => window.location.reload()}>Reload</Button>
-      </div>
-    </StyledDemo>
+    <ChartState initialYDomain={[100, 200]}>
+      {({ state: { xDomain, yDomain, animate }, actions: { changeXDomain } }) => (
+        <StyledDemo>
+          <Title>Composable D3 chart</Title>
+          <Chart>
+            <Suspense fallback={<Spinner />}>
+              <DemoChartWithData
+                color={color}
+                animate={animate}
+                xDomain={xDomain!}
+                yDomain={yDomain!}
+                changeXDomain={changeXDomain}
+              />
+            </Suspense>
+          </Chart>
+          <div>
+            <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>+</Button>
+            <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>-</Button>
+            <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
+            <Button onClick={() => window.location.reload()}>Reload</Button>
+          </div>
+        </StyledDemo>
+      )}
+    </ChartState>
   );
 }
 
-const toggleColor = (prevColor: string) =>
-  prevColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b';
+interface DemoChartWithDataProps {
+  color: string;
+  xDomain: DomainTime;
+  yDomain: DomainLinear;
+  animate: boolean;
+  changeXDomain(domain: DomainTime): void;
+}
+
+function DemoChartWithData(props: DemoChartWithDataProps) {
+  const data = createResource<Datum[]>(fetch('https://api.iextrading.com/1.0/stock/aapl/chart'), 'data');
+
+  if (!props.xDomain) {
+    props.changeXDomain(extent(data, xAccessor) as DomainTime);
+    return null;
+  }
+
+  return <DemoChart {...props} data={data} xDomain={props.xDomain as DomainTime} />;
+}
+
+const toggleColor = (prevColor: string) => (prevColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b');
 
 // ----==== Styles ====---- //
 const StyledDemo = styled.div`

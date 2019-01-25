@@ -1,60 +1,51 @@
-import { extent } from 'd3-array';
 import * as React from 'react';
 import { css } from 'styled-components';
-import { ChartState } from '../d3Chart/components/ChartState';
 import { Spline } from '../d3Chart/components/Spline';
 import { XAxis } from '../d3Chart/components/XAxis';
 import { YAxis } from '../d3Chart/components/YAxis';
 import { D3Chart } from '../d3Chart/D3Chart';
 import { DomainLinear, DomainTime, Spacing } from '../d3Chart/models';
 import { Datum, xAccessor, yAccessor } from './Demo';
-import { createResource } from './simpleCache';
 
 interface DemoChartProps {
-  splineColor: string;
+  data: Datum[];
+  xDomain: DomainTime;
+  yDomain: DomainLinear;
+  color: string;
+  animate: boolean;
+  changeXDomain(domain: DomainTime): void;
 }
 
 const margin: Spacing = { top: 5, right: 5, bottom: 20, left: 26 };
 
 export function DemoChart(props: DemoChartProps) {
-  const { splineColor } = props;
-
-  const data = createResource<Datum[]>(
-    fetch('https://api.iextrading.com/1.0/stock/aapl/chart'),
-    'data'
-  );
-
-  const initialXDomain = extent(data, xAccessor) as DomainTime;
-  const initialYDomain = [100, 200] as DomainLinear;
+  const { color, data, xDomain, yDomain, animate, changeXDomain } = props;
 
   return (
-    <ChartState initialXDomain={initialXDomain} initialYDomain={initialYDomain}>
-      {({ state: { xDomain, yDomain }, actions: { changeXDomain } }) => (
-        <D3Chart
-          margin={margin}
-          xDomain={xDomain}
-          yDomain={yDomain}
-          xAccessor={xAccessor}
-          data={data}
-          onZoom={changeXDomain}
-        >
-          {({ xScale, yScale, contentSize }) => (
-            <>
-              <XAxis xScale={xScale} size={contentSize} />
-              <YAxis yScale={yScale} />
-              <Spline
-                data={data}
-                xScale={xScale}
-                yScale={yScale}
-                xAccessor={xAccessor}
-                yAccessor={yAccessor}
-                styles={splineStyles(splineColor)}
-              />
-            </>
-          )}
-        </D3Chart>
+    <D3Chart
+      margin={margin}
+      xDomain={xDomain}
+      yDomain={yDomain}
+      xAccessor={xAccessor}
+      data={data}
+      onZoom={changeXDomain}
+    >
+      {({ xScale, yScale, contentSize }) => (
+        <>
+          <XAxis xScale={xScale} size={contentSize} animate={animate} />
+          <YAxis yScale={yScale} />
+          <Spline
+            data={data}
+            xScale={xScale}
+            yScale={yScale}
+            xAccessor={xAccessor}
+            yAccessor={yAccessor}
+            animateScale={animate}
+            styles={splineStyles(color)}
+          />
+        </>
       )}
-    </ChartState>
+    </D3Chart>
   );
 }
 
