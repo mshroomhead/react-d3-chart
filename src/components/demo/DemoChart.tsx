@@ -1,13 +1,14 @@
 import { extent } from 'd3-array';
 import * as React from 'react';
 import { css } from 'styled-components';
-import { ChartState } from './D3Chart/ChartState';
-import { D3Chart } from './D3Chart/D3Chart';
-import { DomainLinear, DomainTime, Spacing } from './D3Chart/d3Chart.models';
-import { Spline } from './D3Chart/Spline';
-import { XAxis } from './D3Chart/XAxis';
-import { createResource } from './dataFetcher';
+import { ChartState } from '../d3Chart/components/ChartState';
+import { Spline } from '../d3Chart/components/Spline';
+import { XAxis } from '../d3Chart/components/XAxis';
+import { YAxis } from '../d3Chart/components/YAxis';
+import { D3Chart } from '../d3Chart/D3Chart';
+import { DomainLinear, DomainTime, Spacing } from '../d3Chart/models';
 import { Datum, xAccessor, yAccessor } from './Demo';
+import { createResource } from './simpleCache';
 
 interface DemoChartProps {
   splineColor: string;
@@ -41,6 +42,7 @@ export function DemoChart(props: DemoChartProps) {
           {({ xScale, yScale, contentSize }) => (
             <>
               <XAxis xScale={xScale} size={contentSize} />
+              <YAxis yScale={yScale} />
               <Spline
                 data={data}
                 xScale={xScale}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component, ReactNode } from 'react';
-import { DomainLinear, DomainTime } from './d3Chart.models';
+import { DomainLinear, DomainTime } from '../models';
 
 export interface ChartStateProps {
   initialXDomain: DomainTime;

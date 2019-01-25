@@ -1,4 +1,4 @@
-import { DomainTime, ScaleLinear, ScaleTime } from './d3Chart.models';
+import { DomainTime, ScaleLinear, ScaleTime } from './models';
 import { isEqual } from 'lodash';
 
 export function getTimeDelta(domain: DomainTime) {

@@ -6,8 +6,8 @@ import * as React from 'react';
 import { PureComponent } from 'react';
 
 import styled, { FlattenSimpleInterpolation } from 'styled-components';
-import { ScaleLinear, ScaleTime } from './d3Chart.models';
-import { getClipPathUrl } from './d3ChartUtils';
+import { ScaleLinear, ScaleTime } from '../models';
+import { getClipPathUrl } from '../utils';
 
 export interface SplineProps<Datum> {
   data: Datum[];

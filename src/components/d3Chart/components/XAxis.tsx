@@ -3,7 +3,7 @@ import { select } from 'd3-selection';
 import * as React from 'react';
 import { Component } from 'react';
 
-import { ScaleTime, Size } from './d3Chart.models';
+import { ScaleTime, Size } from '../models';
 
 export interface XAxisProps {
   xScale: ScaleTime;
@@ -52,9 +52,9 @@ export class XAxis extends Component<XAxisProps> {
       xAxis.tickFormat(formatTick);
     }
 
-    select(this.element.current as Element)
+    select(this.element.current as SVGSVGElement)
       .attr('transform', `translate(0, ${height})`)
-      .call(xAxis as any);
+      .call(xAxis);
   }
 
   render() {

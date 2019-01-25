@@ -6,8 +6,8 @@ import * as React from 'react';
 import { PureComponent } from 'react';
 import styled from 'styled-components/macro';
 
-import { DomainTime, ScaleLinear, ScaleTime, Size } from './d3Chart.models';
-import { getTimeDelta, isScaleEqual } from './d3ChartUtils';
+import { DomainTime, ScaleLinear, ScaleTime, Size } from '../models';
+import { getTimeDelta, isScaleEqual } from '../utils';
 
 export interface OverlayProps<Datum> {
   data: Datum[];

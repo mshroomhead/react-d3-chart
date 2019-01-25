@@ -10,9 +10,9 @@ import {
   Size,
   ScaleTime,
   ScaleLinear,
-} from './d3Chart.models';
-import { Overlay } from './D3ChartOverlay';
-import { ResponsiveContainer } from './ResponsiveContainer';
+} from './models';
+import { Overlay } from './components/Overlay';
+import { ResponsiveContainer } from './components/ResponsiveContainer';
 
 export interface D3ChartProps<Datum> {
   /**
