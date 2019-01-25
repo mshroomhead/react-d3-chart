@@ -46,7 +46,10 @@ export function Demo() {
 
   return (
     <ChartState initialYDomain={[100, 200]}>
-      {({ state: { xDomain, yDomain, animate }, actions: { changeXDomain } }) => (
+      {({
+        state: { xDomain, yDomain, animate },
+        actions: { changeXDomain },
+      }) => (
         <StyledDemo>
           <Title>Composable D3 chart</Title>
           <Chart>
@@ -61,8 +64,12 @@ export function Demo() {
             </Suspense>
           </Chart>
           <div>
-            <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>+</Button>
-            <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>-</Button>
+            <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>
+              +
+            </Button>
+            <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>
+              -
+            </Button>
             <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
             <Button onClick={() => window.location.reload()}>Reload</Button>
           </div>
@@ -81,17 +88,23 @@ interface DemoChartWithDataProps {
 }
 
 function DemoChartWithData(props: DemoChartWithDataProps) {
-  const data = createResource<Datum[]>(fetch('https://api.iextrading.com/1.0/stock/aapl/chart'), 'data');
+  const data = createResource<Datum[]>(
+    fetch('https://api.iextrading.com/1.0/stock/aapl/chart'),
+    'data'
+  );
 
   if (!props.xDomain) {
     props.changeXDomain(extent(data, xAccessor) as DomainTime);
     return null;
   }
 
-  return <DemoChart {...props} data={data} xDomain={props.xDomain as DomainTime} />;
+  return (
+    <DemoChart {...props} data={data} xDomain={props.xDomain as DomainTime} />
+  );
 }
 
-const toggleColor = (prevColor: string) => (prevColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b');
+const toggleColor = (prevColor: string) =>
+  prevColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b';
 
 // ----==== Styles ====---- //
 const StyledDemo = styled.div`

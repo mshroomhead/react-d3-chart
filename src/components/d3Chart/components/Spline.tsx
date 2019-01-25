@@ -53,7 +53,6 @@ export class Spline<Datum> extends PureComponent<SplineProps<Datum>> {
   }
 
   update() {
-    console.count('spline update');
     const { animateScale } = this.props;
 
     const selection = select(this.element.current);
@@ -81,7 +80,6 @@ export class Spline<Datum> extends PureComponent<SplineProps<Datum>> {
   }
 
   render() {
-    console.count('Spline render');
     const { clipPathId, styles } = this.props;
     const clipPath = getClipPathUrl(clipPathId);
 
@@ -109,6 +107,8 @@ export function animateLine(line: SVGPathElement) {
     .ease(easeSinInOut)
     .attr('stroke-dashoffset', 0)
     .on('end', function(this: SVGPathElement) {
-      select(this).attr('stroke-dasharray', 'none');
+      select(this)
+        .attr('stroke-dasharray', 'none')
+        .transition();
     });
 }
