@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Suspense, useState } from 'react';
 import styled from 'styled-components/macro';
 import { DemoChart } from './DemoChart';
+import { Spinner } from './Spinner';
 
 interface DemoState {
   data: Datum[] | null;
@@ -42,7 +43,7 @@ export function Demo() {
     <StyledDemo>
       <Title>Composable D3 chart</Title>
       <Chart>
-        <Suspense fallback={'Loading...'}>
+        <Suspense fallback={<Spinner />}>
           <DemoChart splineColor={color} />
         </Suspense>
       </Chart>
@@ -67,6 +68,7 @@ const Title = styled.h3`
 `;
 
 const Chart = styled.div`
+  position: relative;
   height: 300px;
   margin: 32px;
   align-self: stretch;
