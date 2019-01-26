@@ -20,7 +20,7 @@ const initialChartState: ChartState = {
 };
 
 const chartActions = (
-  setState?: (state: ChartState) => void,
+  setState: (state: ChartState) => void,
   prevState: ChartState = initialChartState
 ) => ({
   setData(data: Datum[]): ChartState {
@@ -31,7 +31,7 @@ const chartActions = (
     fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
       .then(res => res.json())
       .then(data => {
-        setState!(this.setData(data));
+        setState(this.setData(data));
       });
 
     return prevState;
@@ -50,8 +50,8 @@ const chartActions = (
 });
 
 export const ChartContext = createContext({
-  state: initialChartState,
-  actions: chartActions(),
+  state: {} as ChartState,
+  actions: {} as ReturnType<typeof chartActions>,
 });
 
 export function ChartContextProvider(props: { children: ReactNode }) {

@@ -1,5 +1,5 @@
 export function injectPrevState<A, S>(
-  actionFunction: (setState?: any, prevState?: S) => A,
+  actionFunction: (...args: any[]) => A,
   setState: (setState: (prevState: S) => S) => void
 ): A {
   return Object.keys(actionFunction()).reduce(
