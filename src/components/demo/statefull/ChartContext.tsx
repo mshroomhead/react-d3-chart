@@ -38,7 +38,7 @@ const chartActions = (
         setState(this.setData(Loadable.Failed()));
       });
 
-    return prevState;
+    return { ...prevState, data: Loadable.Loading() };
   },
 
   changeXDomain(domain: DomainTime, animate: boolean = false): ChartState {
