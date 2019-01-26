@@ -7,8 +7,8 @@ import { XAxis } from '../../d3Chart/components/XAxis';
 import { YAxis } from '../../d3Chart/components/YAxis';
 import { D3Chart } from '../../d3Chart/D3Chart';
 import { Spacing } from '../../d3Chart/models';
-import { ChartContext } from '../statefull/ChartContext';
 import { Datum, xAccessor, yAccessor } from '../Demo';
+import { ChartContext } from '../statefull/ChartContext';
 
 interface ChartProps {
   data: Datum[];

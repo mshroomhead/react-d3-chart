@@ -1,6 +1,7 @@
 import { createContext, default as React, ReactNode, useState } from 'react';
 import { DomainLinear, DomainTime } from '../../d3Chart/models';
 import { Datum } from '../Demo';
+import { Loadable } from '../models';
 import { injectPrevState } from './contextUtils';
 
 interface ChartState {
@@ -8,7 +9,7 @@ interface ChartState {
   yDomain: DomainLinear | undefined;
   animate: boolean;
   color: string;
-  data: Datum[];
+  data: Loadable<Datum[]>;
 }
 
 const initialChartState: ChartState = {
@@ -16,14 +17,14 @@ const initialChartState: ChartState = {
   yDomain: [100, 200],
   animate: false,
   color: '#0088cc',
-  data: [],
+  data: Loadable.Empty(),
 };
 
 const chartActions = (
   setState: (state: ChartState) => void,
   prevState: ChartState = initialChartState
 ) => ({
-  setData(data: Datum[]): ChartState {
+  setData(data: Loadable<Datum[]>): ChartState {
     return { ...prevState, data };
   },
 
@@ -31,7 +32,10 @@ const chartActions = (
     fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
       .then(res => res.json())
       .then(data => {
-        setState(this.setData(data));
+        setState(this.setData(Loadable.Valid(data)));
+      })
+      .catch(() => {
+        setState(this.setData(Loadable.Failed()));
       });
 
     return prevState;
