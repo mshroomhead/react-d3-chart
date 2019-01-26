@@ -19,9 +19,22 @@ const initialChartState: ChartState = {
   data: [],
 };
 
-const chartActions = (prevState: ChartState = initialChartState) => ({
+const chartActions = (
+  setState?: (state: ChartState) => void,
+  prevState: ChartState = initialChartState
+) => ({
   setData(data: Datum[]): ChartState {
     return { ...prevState, data };
+  },
+
+  loadData(): ChartState {
+    fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
+      .then(res => res.json())
+      .then(data => {
+        setState!(this.setData(data));
+      });
+
+    return prevState;
   },
 
   changeXDomain(domain: DomainTime, animate: boolean = false): ChartState {
