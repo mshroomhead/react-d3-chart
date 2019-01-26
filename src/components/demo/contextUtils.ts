@@ -1,4 +1,4 @@
-export function mapActions<A, S>(
+export function injectPrevState<A, S>(
   actionFunction: (prevState?: S) => A,
   setState: (setState: (prevState: S) => S) => void
 ): A {

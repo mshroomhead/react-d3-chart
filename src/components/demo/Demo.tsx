@@ -1,12 +1,11 @@
 import { extent } from 'd3-array';
 import * as React from 'react';
-import { Suspense, useContext, useState } from 'react';
+import { Suspense, useContext } from 'react';
 import styled from 'styled-components/macro';
-import { ChartContext } from './ChartContext';
-import { ChartState } from '../d3Chart/components/ChartState';
-import { DomainLinear, DomainTime } from '../d3Chart/models';
+import { DomainTime } from '../d3Chart/models';
 import { zoomIn, zoomOut } from '../d3Chart/utils';
-import { DemoChart } from './DemoChart';
+import { Chart } from './Chart';
+import { ChartContext } from './ChartContext';
 import { createResource } from './simpleCache';
 import { Spinner } from './Spinner';
 
@@ -37,95 +36,51 @@ export interface Datum {
 export const xAccessor = (datum: Datum) => new Date(datum.date);
 export const yAccessor = (datum: Datum) => datum.close;
 
-interface DomainState {
-  xDomain: DomainTime | null;
-  animate: boolean;
-}
-
-// export function Demo() {
-//   const [color, setColor] = useState('#0088cc');
-//
-//   return (
-//     <ChartState initialYDomain={[100, 200]}>
-//       {({
-//         state: { xDomain, yDomain, animate },
-//         actions: { changeXDomain },
-//       }) => (
-//         <StyledDemo>
-//           <Title>Composable D3 chart</Title>
-//           <Chart>
-//             <Suspense fallback={<Spinner />}>
-//               <DemoChartWithData
-//                 color={color}
-//                 animate={animate}
-//                 xDomain={xDomain!}
-//                 yDomain={yDomain!}
-//                 changeXDomain={changeXDomain}
-//               />
-//             </Suspense>
-//           </Chart>
-//           <div>
-//             <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>
-//               +
-//             </Button>
-//             <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>
-//               -
-//             </Button>
-//             <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
-//             <Button onClick={() => window.location.reload()}>Reload</Button>
-//           </div>
-//         </StyledDemo>
-//       )}
-//     </ChartState>
-//   );
-// }
-
 export function Demo() {
-  const { state, actions } = useContext(ChartContext);
-  const { xDomain } = state;
-  const { changeXDomain, toggleColor } = actions;
-
   return (
     <StyledDemo>
       <Title>Composable D3 chart</Title>
-      <Chart>
+      <ChartBackground>
         <Suspense fallback={<Spinner />}>
-          <DemoChartWithData xDomain={xDomain!} changeXDomain={changeXDomain} />
+          <ChartWithData />
         </Suspense>
-      </Chart>
-      <div>
-        <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>+</Button>
-        <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>
-          -
-        </Button>
-        <Button onClick={() => toggleColor()}>Toggle color</Button>
-        <Button onClick={() => window.location.reload()}>Reload</Button>
-      </div>
+      </ChartBackground>
+      <ChartButtons />
     </StyledDemo>
   );
 }
 
-interface DemoChartWithDataProps {
-  xDomain: DomainTime;
-  changeXDomain(domain: DomainTime): void;
-}
+function ChartWithData() {
+  const { state, actions } = useContext(ChartContext);
+  const { xDomain } = state;
+  const { changeXDomain } = actions;
 
-function DemoChartWithData(props: DemoChartWithDataProps) {
   const data = createResource<Datum[]>(
     fetch('https://api.iextrading.com/1.0/stock/aapl/chart'),
     'data'
   );
 
-  if (!props.xDomain) {
-    props.changeXDomain(extent(data, xAccessor) as DomainTime);
+  if (!xDomain) {
+    changeXDomain(extent(data, xAccessor) as DomainTime);
     return null;
   }
 
-  return <DemoChart data={data} />;
+  return <Chart data={data} />;
 }
+function ChartButtons() {
+  const { state, actions } = useContext(ChartContext);
+  const { xDomain } = state;
+  const { changeXDomain, toggleColor } = actions;
 
-const toggleColor = (prevColor: string) =>
-  prevColor === '#ef5b5b' ? '#0088cc' : '#ef5b5b';
+  return (
+    <div>
+      <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>+</Button>
+      <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>-</Button>
+      <Button onClick={() => toggleColor()}>Toggle color</Button>
+      <Button onClick={() => window.location.reload()}>Reload</Button>
+    </div>
+  );
+}
 
 // ----==== Styles ====---- //
 const StyledDemo = styled.div`
@@ -139,7 +94,7 @@ const Title = styled.h3`
   color: #a9b7c6;
 `;
 
-const Chart = styled.div`
+const ChartBackground = styled.div`
   padding: 8px;
   position: relative;
   height: 300px;
@@ -161,3 +116,16 @@ const Button = styled.button`
     outline: none;
   }
 `;
+
+// const fetchData = async () => {
+//   throw await fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
+//     .then(res => res.json())
+//     .then(data => {
+//       setData(data);
+//       changeXDomain(extent(data, xAccessor) as DomainTime);
+//     });
+// };
+//
+// useEffect(() => {
+//   fetchData();
+// }, []);

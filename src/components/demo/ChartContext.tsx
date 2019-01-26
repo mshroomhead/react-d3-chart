@@ -1,6 +1,6 @@
 import { createContext, default as React, ReactNode, useState } from 'react';
 import { DomainLinear, DomainTime } from '../d3Chart/models';
-import { mapActions } from './contextUtils';
+import { injectPrevState } from './contextUtils';
 import { Datum } from './Demo';
 
 interface ChartState {
@@ -20,13 +20,7 @@ const initialChartState: ChartState = {
 };
 
 const chartActions = (prevState: ChartState = initialChartState) => ({
-  async loadData(): Promise<ChartState> {
-    const data = await fetch(
-      'https://api.iextrading.com/1.0/stock/aapl/chart'
-    ).then(r => r.json());
-
-    console.log('chartActions, line 28:', data);
-
+  setData(data: Datum[]): ChartState {
     return { ...prevState, data };
   },
 
@@ -50,7 +44,7 @@ export const ChartContext = createContext({
 export function ChartContextProvider(props: { children: ReactNode }) {
   const [state, setState] = useState(initialChartState);
 
-  const actions = mapActions(chartActions, setState);
+  const actions = injectPrevState(chartActions, setState);
 
   return (
     <ChartContext.Provider value={{ state, actions }}>

@@ -10,14 +10,14 @@ import { Spacing } from '../d3Chart/models';
 import { ChartContext } from './ChartContext';
 import { Datum, xAccessor, yAccessor } from './Demo';
 
-interface DemoChartProps {
+interface ChartProps {
   data: Datum[];
 }
 
 const margin: Spacing = { top: 5, right: 5, bottom: 20, left: 26 };
 const contentClipPath = 'content';
 
-export function DemoChart(props: DemoChartProps) {
+export function Chart(props: ChartProps) {
   const { data } = props;
   const { state, actions } = useContext(ChartContext);
   const { xDomain, yDomain, animate, color } = state;
