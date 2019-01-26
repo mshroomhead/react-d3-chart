@@ -7,15 +7,15 @@ interface CacheEntry {
 const cache: { [key: string]: CacheEntry } = {};
 
 export function createResource<T>(fetch: Promise<Response>, key: string): T {
-  const cachedItem = cache[key];
+  const cacheEntry = cache[key];
 
-  if (cachedItem) {
-    if (cachedItem.response) {
-      return cachedItem.response;
+  if (cacheEntry) {
+    if (cacheEntry.response) {
+      return cacheEntry.response;
     }
 
-    if (cachedItem.error) {
-      throw cachedItem.error;
+    if (cacheEntry.error) {
+      throw cacheEntry.error;
     }
   }
 

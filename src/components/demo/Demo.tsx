@@ -3,11 +3,11 @@ import * as React from 'react';
 import { Suspense, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { DomainTime } from '../d3Chart/models';
-import { zoomIn, zoomOut } from '../d3Chart/utils';
-import { Chart } from './Chart';
-import { ChartContext } from './ChartContext';
-import { createResource } from './simpleCache';
-import { Spinner } from './Spinner';
+import { Chart } from './components/Chart';
+import { ChartButtons } from './components/ChartButtons';
+import { ChartContext } from './statefull/ChartContext';
+import { createResource } from './statefull/simpleCache';
+import { Spinner } from './components/Spinner';
 
 export interface Datum {
   date: string;
@@ -67,20 +67,6 @@ function ChartWithData() {
 
   return <Chart data={data} />;
 }
-function ChartButtons() {
-  const { state, actions } = useContext(ChartContext);
-  const { xDomain } = state;
-  const { changeXDomain, toggleColor } = actions;
-
-  return (
-    <div>
-      <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>+</Button>
-      <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>-</Button>
-      <Button onClick={() => toggleColor()}>Toggle color</Button>
-      <Button onClick={() => window.location.reload()}>Reload</Button>
-    </div>
-  );
-}
 
 // ----==== Styles ====---- //
 const StyledDemo = styled.div`
@@ -101,20 +87,6 @@ const ChartBackground = styled.div`
   margin: 32px;
   align-self: stretch;
   background-color: white;
-`;
-
-const Button = styled.button`
-  margin: 0 8px;
-  padding: 8px 16px;
-  color: #a9b7c6;
-  font-weight: bold;
-  font-size: 16px;
-  background-color: #3c3f41;
-  border: none;
-  border-radius: 999px;
-  &:focus {
-    outline: none;
-  }
 `;
 
 // const fetchData = async () => {

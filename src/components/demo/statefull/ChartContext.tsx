@@ -1,7 +1,7 @@
 import { createContext, default as React, ReactNode, useState } from 'react';
-import { DomainLinear, DomainTime } from '../d3Chart/models';
+import { DomainLinear, DomainTime } from '../../d3Chart/models';
+import { Datum } from '../Demo';
 import { injectPrevState } from './contextUtils';
-import { Datum } from './Demo';
 
 interface ChartState {
   xDomain: DomainTime | undefined;

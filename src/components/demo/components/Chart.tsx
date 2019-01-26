@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { useContext } from 'react';
 import { css } from 'styled-components';
-import { Defs } from '../d3Chart/components/Defs';
-import { Spline } from '../d3Chart/components/Spline';
-import { XAxis } from '../d3Chart/components/XAxis';
-import { YAxis } from '../d3Chart/components/YAxis';
-import { D3Chart } from '../d3Chart/D3Chart';
-import { Spacing } from '../d3Chart/models';
-import { ChartContext } from './ChartContext';
-import { Datum, xAccessor, yAccessor } from './Demo';
+import { Defs } from '../../d3Chart/components/Defs';
+import { Spline } from '../../d3Chart/components/Spline';
+import { XAxis } from '../../d3Chart/components/XAxis';
+import { YAxis } from '../../d3Chart/components/YAxis';
+import { D3Chart } from '../../d3Chart/D3Chart';
+import { Spacing } from '../../d3Chart/models';
+import { ChartContext } from '../statefull/ChartContext';
+import { Datum, xAccessor, yAccessor } from '../Demo';
 
 interface ChartProps {
   data: Datum[];
