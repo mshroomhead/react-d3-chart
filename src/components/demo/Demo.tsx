@@ -1,7 +1,8 @@
 import { extent } from 'd3-array';
 import * as React from 'react';
-import { Suspense, useState } from 'react';
+import { Suspense, useContext, useState } from 'react';
 import styled from 'styled-components/macro';
+import { ChartContext } from './ChartContext';
 import { ChartState } from '../d3Chart/components/ChartState';
 import { DomainLinear, DomainTime } from '../d3Chart/models';
 import { zoomIn, zoomOut } from '../d3Chart/utils';
@@ -41,49 +42,71 @@ interface DomainState {
   animate: boolean;
 }
 
+// export function Demo() {
+//   const [color, setColor] = useState('#0088cc');
+//
+//   return (
+//     <ChartState initialYDomain={[100, 200]}>
+//       {({
+//         state: { xDomain, yDomain, animate },
+//         actions: { changeXDomain },
+//       }) => (
+//         <StyledDemo>
+//           <Title>Composable D3 chart</Title>
+//           <Chart>
+//             <Suspense fallback={<Spinner />}>
+//               <DemoChartWithData
+//                 color={color}
+//                 animate={animate}
+//                 xDomain={xDomain!}
+//                 yDomain={yDomain!}
+//                 changeXDomain={changeXDomain}
+//               />
+//             </Suspense>
+//           </Chart>
+//           <div>
+//             <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>
+//               +
+//             </Button>
+//             <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>
+//               -
+//             </Button>
+//             <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
+//             <Button onClick={() => window.location.reload()}>Reload</Button>
+//           </div>
+//         </StyledDemo>
+//       )}
+//     </ChartState>
+//   );
+// }
+
 export function Demo() {
-  const [color, setColor] = useState('#0088cc');
+  const { state, actions } = useContext(ChartContext);
+  const { xDomain } = state;
+  const { changeXDomain, toggleColor } = actions;
 
   return (
-    <ChartState initialYDomain={[100, 200]}>
-      {({
-        state: { xDomain, yDomain, animate },
-        actions: { changeXDomain },
-      }) => (
-        <StyledDemo>
-          <Title>Composable D3 chart</Title>
-          <Chart>
-            <Suspense fallback={<Spinner />}>
-              <DemoChartWithData
-                color={color}
-                animate={animate}
-                xDomain={xDomain!}
-                yDomain={yDomain!}
-                changeXDomain={changeXDomain}
-              />
-            </Suspense>
-          </Chart>
-          <div>
-            <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>
-              +
-            </Button>
-            <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>
-              -
-            </Button>
-            <Button onClick={() => setColor(toggleColor)}>Toggle color</Button>
-            <Button onClick={() => window.location.reload()}>Reload</Button>
-          </div>
-        </StyledDemo>
-      )}
-    </ChartState>
+    <StyledDemo>
+      <Title>Composable D3 chart</Title>
+      <Chart>
+        <Suspense fallback={<Spinner />}>
+          <DemoChartWithData xDomain={xDomain!} changeXDomain={changeXDomain} />
+        </Suspense>
+      </Chart>
+      <div>
+        <Button onClick={() => changeXDomain(zoomIn(xDomain!), true)}>+</Button>
+        <Button onClick={() => changeXDomain(zoomOut(xDomain!), true)}>
+          -
+        </Button>
+        <Button onClick={() => toggleColor()}>Toggle color</Button>
+        <Button onClick={() => window.location.reload()}>Reload</Button>
+      </div>
+    </StyledDemo>
   );
 }
 
 interface DemoChartWithDataProps {
-  color: string;
   xDomain: DomainTime;
-  yDomain: DomainLinear;
-  animate: boolean;
   changeXDomain(domain: DomainTime): void;
 }
 
@@ -98,9 +121,7 @@ function DemoChartWithData(props: DemoChartWithDataProps) {
     return null;
   }
 
-  return (
-    <DemoChart {...props} data={data} xDomain={props.xDomain as DomainTime} />
-  );
+  return <DemoChart data={data} />;
 }
 
 const toggleColor = (prevColor: string) =>
