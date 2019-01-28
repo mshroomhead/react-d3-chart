@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Suspense } from 'react';
 import styled from 'styled-components/macro';
 import { ChartButtons } from './components/ChartButtons';
+import { ChartWithData } from './components/ChartWithData';
 import { ChartWithData2 } from './components/ChartWithData2';
 import { Spinner } from './components/Spinner';
 

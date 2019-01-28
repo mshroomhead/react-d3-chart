@@ -1,14 +1,7 @@
-import {
-  createContext,
-  default as React,
-  ReactNode,
-  useReducer,
-  useState,
-} from 'react';
+import { createContext, default as React, ReactNode, useReducer } from 'react';
 import { DomainLinear, DomainTime } from '../../d3Chart/models';
 import { Datum } from '../Demo';
 import { Loadable } from '../models';
-import { injectPrevState } from './contextUtils';
 
 interface ChartState {
   xDomain: DomainTime | undefined;
@@ -29,14 +22,17 @@ const initialChartState: ChartState = {
 interface Action {
   action: keyof ReturnType<typeof chartActions>;
   payload: any[];
+  actions?: any;
 }
 
 const reducer = (prevState: ChartState, action: Action) =>
-  (chartActions(prevState) as any)[action.action](...action.payload);
+  (chartActions(prevState, action.actions) as any)[action.action](
+    ...action.payload
+  );
 
 const chartActions = (
   prevState: ChartState = initialChartState,
-  dispatch: (...args: any[]) => void = () => null
+  actions?: any
 ) => ({
   setData(data: Loadable<Datum[]>): ChartState {
     return { ...prevState, data };
@@ -46,10 +42,10 @@ const chartActions = (
     fetch('https://api.iextrading.com/1.0/stock/aapl/chart')
       .then(res => res.json())
       .then(data => {
-        dispatch(this.setData(Loadable.Valid(data)));
+        actions.setData(Loadable.Valid(data));
       })
       .catch(() => {
-        dispatch(this.setData(Loadable.Failed()));
+        actions.setData(Loadable.Failed());
       });
 
     return { ...prevState, data: Loadable.Loading() };
@@ -69,25 +65,20 @@ const chartActions = (
 
 type Actions = ReturnType<typeof chartActions>;
 
-const createActions2 = (dispatch: (action: Action) => void) => {
+const createActions = (dispatch: (action: Action) => void) => {
   return Object.keys(chartActions()).reduce(
     (actions, key) => {
-      actions[key as keyof Actions] = (...args: any[]) =>
-        dispatch({ action: key as keyof Actions, payload: args });
+      (actions as any)[key as keyof Actions] = (...args: any[]) =>
+        dispatch({
+          action: key as keyof Actions,
+          payload: args,
+          actions: actions,
+        });
       return actions;
     },
-    {} as ReturnType<typeof createActions>
+    {} as Actions
   );
 };
-
-const createActions = (dispatch: (action: Action) => void) => ({
-  setData: (data: Loadable<Datum[]>) =>
-    dispatch({ action: 'setData', payload: [data] }),
-  loadData: () => dispatch({ action: 'loadData', payload: [] }),
-  changeXDomain: (domain: DomainTime, animate: boolean = false) =>
-    dispatch({ action: 'changeXDomain', payload: [] }),
-  toggleColor: () => dispatch({ action: 'toggleColor', payload: [] }),
-});
 
 export const ChartContext = createContext({
   state: {} as ChartState,
@@ -97,7 +88,7 @@ export const ChartContext = createContext({
 export function ChartContextProvider(props: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialChartState);
 
-  const actions = createActions2(dispatch);
+  const actions = createActions(dispatch);
 
   return (
     <ChartContext.Provider value={{ state, actions }}>

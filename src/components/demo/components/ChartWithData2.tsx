@@ -2,7 +2,7 @@ import { extent } from 'd3-array';
 import { default as React, useContext, useEffect } from 'react';
 import { DomainTime } from '../../d3Chart/models';
 import { xAccessor } from '../Demo';
-import { ChartContext } from '../statefull/ChartContext';
+import { ChartContext } from '../statefull/ChartContext2';
 import { Chart } from './Chart';
 import { Spinner } from './Spinner';
 
