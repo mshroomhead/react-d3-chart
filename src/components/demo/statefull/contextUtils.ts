@@ -1,14 +1,18 @@
-export function injectPrevState<A, S>(
-  actionFunction: (...args: any[]) => A,
-  setState: (setState: (prevState: S) => S) => void
+import { Dispatch, SetStateAction } from 'react';
+
+type SetState<S> = Dispatch<SetStateAction<S>>;
+
+export function createActions<A, S>(
+  actions: (prevState: S, setState: SetState<S>) => A,
+  setState: SetState<S>
 ): A {
-  return Object.keys(actionFunction()).reduce(
-    (actions, key) => {
-      (actions as any)[key] = (...payload: any[]) =>
+  return Object.keys((actions as any)()).reduce(
+    (mappedActions, key) => {
+      (mappedActions as any)[key] = (...payload: any[]) =>
         setState(prevState =>
-          (actionFunction as any)(setState, prevState)[key](...payload)
+          (actions as any)(prevState, setState)[key](...payload)
         );
-      return actions;
+      return mappedActions;
     },
     {} as A
   );

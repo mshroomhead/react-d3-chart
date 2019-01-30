@@ -1,8 +1,15 @@
-import { createContext, default as React, ReactNode, useState } from 'react';
+import {
+  createContext,
+  default as React,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from 'react';
 import { DomainLinear, DomainTime } from '../../d3Chart/models';
 import { Datum } from '../Demo';
 import { Loadable } from '../models';
-import { injectPrevState } from './contextUtils';
+import { createActions } from './contextUtils';
 
 interface ChartState {
   xDomain: DomainTime | undefined;
@@ -21,8 +28,8 @@ const initialChartState: ChartState = {
 };
 
 const chartActions = (
-  setState: (state: ChartState) => void,
-  prevState: ChartState = initialChartState
+  prevState: ChartState = initialChartState,
+  setState: Dispatch<SetStateAction<ChartState>>
 ) => ({
   setData(data: Loadable<Datum[]>): ChartState {
     return { ...prevState, data };
@@ -61,7 +68,7 @@ export const ChartContext = createContext({
 export function ChartContextProvider(props: { children: ReactNode }) {
   const [state, setState] = useState(initialChartState);
 
-  const actions = injectPrevState(chartActions, setState);
+  const actions = createActions(chartActions, setState);
 
   return (
     <ChartContext.Provider value={{ state, actions }}>
